@@ -1,0 +1,17 @@
+[Unit]
+Description=HomelabOS Service
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutSec=infinity
+Restart=always
+RestartSec=3
+
+ExecStartPre=/usr/bin/docker-compose -f /var/homelabos/docker/docker-compose.yml -p homelabos down
+
+ExecStart=/usr/bin/docker-compose -f /var/homelabos/docker/docker-compose.yml -p homelabos up
+ExecStop=/usr/bin/docker-compose -f /var/homelabos/docker/docker-compose.yml -p homelabos stop
+
+[Install]
+WantedBy=multi-user.target

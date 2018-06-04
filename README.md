@@ -18,3 +18,12 @@ Make it easy for anyone to own all their data in an easy and secure way, without
 * Gogs - Git Hosting
 * NextCloud - Private Cloud Storage, Calendar, Contacts, LDAP, etc.
 * uTorrent - Torrent Downloader
+
+## Installation
+
+Install Ubuntu 18.04
+
+Create a user with passwordless sudo access and ssh key based access.
+
+Run `ansible-playbook -i hosts homelabos.yml`
+

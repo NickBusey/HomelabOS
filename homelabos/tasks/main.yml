@@ -1,0 +1,36 @@
+---
+- name: Make HomelabOS data directories.
+  file:
+    path: "/var/homelabos/{{ item }}"
+    state: directory
+  loop:
+    - docker
+    - emby
+    - grafana
+    - homeassistant
+    - influxdb
+    - nextcloud
+    - nextcloud_db
+    - telegraf
+    - traefik
+
+- name: Copy HomelabOS docker-compose.yml file into place.
+  template:
+    src: docker-compose.yml
+    dest: /var/homelabos/docker/docker-compose.yml
+
+- name: Pull latest HomelabOS service docker images.
+  command: docker-compose -f /var/homelabos/docker/docker-compose.yml pull
+
+- name: Configure Telegraf.
+  copy: src=telegraf.conf dest=/var/homelabos/telegraf/telegraf.conf
+
+- name: Configure HomelabOS systemd service.
+  template: src=homelabos.service dest=/etc/systemd/system/homelabos.service
+
+- name: Restart HomelabOS service.
+  systemd:
+    name: homelabos
+    enabled: yes
+    daemon-reload: yes
+    state: restarted

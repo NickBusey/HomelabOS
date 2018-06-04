@@ -1,0 +1,50 @@
+---
+- name: Update apt cache
+  apt: update_cache=yes
+  tags:
+    - dependencies
+
+- name: Upgrade all dist packages
+  apt: upgrade=dist
+  tags:
+    - dependencies
+
+- name: Install necessities and nice-to-haves
+  apt: pkg={{ item }} state=present
+  with_items:
+    - apt-transport-https
+    - git
+    - htop
+    - iftop
+    - iotop
+    - mosh
+    - screen
+    - sudo
+    - unattended-upgrades
+    - vim
+    - zsh
+    - docker-compose
+  tags:
+    - dependencies
+
+- name: timezone - configure /etc/timezone
+  copy:
+    content: "{{ common_timezone | regex_replace('$', '\n') }}"
+    dest: /etc/timezone
+    owner: root
+    group: root
+    mode: 0644
+  register: common_timezone_config
+
+- name: timezone - Set localtime to UTC
+  file: src=/usr/share/zoneinfo/Etc/UTC dest=/etc/localtime
+  when: common_timezone_config.changed
+
+- name: timezone - reconfigure tzdata
+  command: dpkg-reconfigure --frontend noninteractive tzdata
+  when: common_timezone_config.changed
+
+- name: Ensure locale en_US.UTF-8 locale is present
+  locale_gen:
+    name: en_US.UTF-8
+    state: present

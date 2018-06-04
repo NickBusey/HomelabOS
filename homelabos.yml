@@ -1,0 +1,19 @@
+---
+# This is the top-level playbook that defines our entire infrastructure.
+
+- hosts: all
+  become: True
+  gather_facts: True
+  tags: docker
+
+  roles:
+    - docker
+
+- hosts: all
+  become: True
+  gather_facts: True
+  tags: homelabos
+
+  roles:
+    - homelabos
+

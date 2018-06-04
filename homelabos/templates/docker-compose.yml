@@ -1,0 +1,51 @@
+version: '3'
+services:
+  homeassistant:
+    image: homeassistant/home-assistant
+    volumes:
+      - /var/homelabos/homeassistant:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/letsencrypt:/etc/letsencrypt
+    restart: always
+    ports:
+      - 8123:8123
+      - 1883:1883
+      - 8080:8080
+      - 51827:51827
+    links:
+      - influxdb
+  emby:
+    image: emby/embyserver:latest
+    network_mode: host
+    restart: always
+    volumes:
+      - /var/homelabos/emby:/config
+  influxdb:
+    image: influxdb
+    volumes:
+      - /var/homelabos/influxdb:/var/lib/influxdb
+    ports:
+      - 8086:8086
+  chronograf:
+    image: chronograf
+    links:
+      - influxdb
+    ports:
+      - 8888:8888
+  grafana:
+    image: grafana/grafana
+    links:
+      - influxdb
+    ports:
+      - 3000:3000
+    volumes:
+      - /var/homelabos/grafana:/var/lib/grafana
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,natel-discrete-panel,petrslavotinek-carpetplot-panel,vonage-status-panel
+  telegraf:
+    image: telegraf
+    volumes:
+      - /var/homelabos/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
+      - /var/run/docker.sock:/var/run/docker.sock
+    links:
+      - influxdb
