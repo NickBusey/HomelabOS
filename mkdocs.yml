@@ -1,0 +1,7 @@
+site_name: HomelabOS
+
+theme:
+  name: 'material'
+
+pages:
+    - Home: index.md

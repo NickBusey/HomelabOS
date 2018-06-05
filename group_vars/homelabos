@@ -1,7 +1,14 @@
-main_user_name: myuser
+# Set your variables here
 
-ansible_ssh_user: myuser
+# Default user name to create as admin with services
+main_user_name: (required)
 
+# User name used to connect via ssh. Must have passwordless sudo.
+ansible_ssh_user: (required)
+
+# Timezone of the server
 common_timezone: 'Etc/UTC'
 
-domain: my.domain.com
+# Domain that will be used to point at the server
+# Must have a DNS A record of `*.yourserver.com` pointing at your server's IP.
+domain: yourserver.com

@@ -15,10 +15,9 @@ services:
     links:
       - influxdb
     labels:
-      # - "traefik.docker.network=web"
       - "traefik.enable=true"
-      - "traefik.admin.frontend.rule=Host:home.home.busey.me"
-      - "traefik.admin.protocol=https"
+      - "traefik.admin.frontend.rule=Host:homeassistant.{{ domain }}"
+      - "traefik.admin.protocol=http"
       - "traefik.admin.port=8123"
 
   emby:
@@ -27,6 +26,13 @@ services:
     restart: always
     volumes:
       - /var/homelabos/emby:/config
+    ports:
+      - 8096:8096
+    labels:
+      - "traefik.enable=true"
+      - "traefik.admin.frontend.rule=Host:emby.{{ domain }}"
+      - "traefik.admin.protocol=http"
+      - "traefik.admin.port=8096"
 
   influxdb:
     image: influxdb
@@ -44,7 +50,10 @@ services:
     ports:
       - 8888:8888
     labels:
-      - "traefik.frontend.rule=PathPrefixStrip:/chronograf"
+      - "traefik.enable=true"
+      - "traefik.admin.frontend.rule=Host:chronograf.{{ domain }}"
+      - "traefik.admin.protocol=http"
+      - "traefik.admin.port=8888"
 
   grafana:
     image: grafana/grafana
@@ -57,6 +66,11 @@ services:
       - /var/homelabos/grafana:/var/lib/grafana
     environment:
       - GF_INSTALL_PLUGINS=grafana-clock-panel,natel-discrete-panel,petrslavotinek-carpetplot-panel,vonage-status-panel
+    labels:
+      - "traefik.enable=true"
+      - "traefik.admin.frontend.rule=Host:grafana.{{ domain }}"
+      - "traefik.admin.protocol=http"
+      - "traefik.admin.port=3000"
 
   telegraf:
     image: telegraf
@@ -73,7 +87,10 @@ services:
     command: --api --docker # Enables the web UI and tells Træfik to listen to docker
     ports:
       - "80:80"     # The HTTP port
+      - "443:443" # HTTPS
       - "8080:8080" # The Web UI (enabled by --api)
+    labels:
+      - "traefik.frontend.rule=Host:{{ domain }}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/homelabos/traefik/traefik.toml:/etc/traefik/traefik.toml
@@ -85,3 +102,15 @@ services:
     labels:
       - "traefik.frontend.rule=Host:whoami.docker.localhost"
       - "traefik.frontend.rule=PathPrefixStrip:/test"
+
+  docs:
+    image: squidfunk/mkdocs-material
+    volumes:
+      - /var/homelabos/docs:/docs
+    ports:
+      - 8000:8000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.admin.frontend.rule=Host:docs.{{ domain }}"
+      - "traefik.admin.protocol=http"
+      - "traefik.admin.port=8000"

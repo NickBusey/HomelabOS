@@ -5,6 +5,8 @@
     state: directory
   loop:
     - docker
+    - docs
+    - docs/docs
     - emby
     - grafana
     - homeassistant
@@ -14,6 +16,26 @@
     - telegraf
     - traefik
 
+- name: Configure Telegraf.
+  template: src=telegraf.conf dest=/var/homelabos/telegraf/telegraf.conf
+
+- name: Configure Traefik.
+  template: src=traefik.toml dest=/var/homelabos/traefik/traefik.toml
+
+- name: Configure HomelabOS Documentation
+  template: src=mkdocs.yml dest=/var/homelabos/docs/mkdocs.yml
+
+- name: Configure HomelabOS Documentation
+  template:
+    src: '{{ item.src }}'
+    dest: /var/homelabos/docs/docs/{{ item.path }}
+    force: yes
+  with_filetree: docs/
+  when: item.state == 'file'
+
+- name: Configure HomelabOS systemd service.
+  template: src=homelabos.service dest=/etc/systemd/system/homelabos.service
+
 - name: Copy HomelabOS docker-compose.yml file into place.
   template:
     src: docker-compose.yml
@@ -22,18 +44,12 @@
 - name: Pull latest HomelabOS service docker images.
   command: docker-compose -f /var/homelabos/docker/docker-compose.yml pull
 
-- name: Configure Telegraf.
-  copy: src=telegraf.conf dest=/var/homelabos/telegraf/telegraf.conf
-
-- name: Configure Traefik.
-  copy: src=traefik.toml dest=/var/homelabos/traefik/traefik.toml
-
-- name: Configure HomelabOS systemd service.
-  template: src=homelabos.service dest=/etc/systemd/system/homelabos.service
-
 - name: Restart HomelabOS service.
   systemd:
     name: homelabos
     enabled: yes
     daemon-reload: yes
     state: restarted
+
+- debug:
+    msg: "HomelabOS Installed successfully! Go to http://docs.{{ domain }}/ to get started."
