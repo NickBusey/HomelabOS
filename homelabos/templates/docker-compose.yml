@@ -206,5 +206,3 @@ services:
     labels:
       - "traefik.frontend.rule=Host:whoami.docker.localhost"
       - "traefik.frontend.rule=PathPrefixStrip:/test"
-
-
