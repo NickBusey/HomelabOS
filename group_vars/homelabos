@@ -12,3 +12,10 @@ common_timezone: 'Etc/UTC'
 # Domain that will be used to point at the server
 # Must have a DNS A record of `*.yourserver.com` pointing at your server's IP.
 domain: yourserver.com
+
+# Your DarkSky API Key. Get one at http://darksky.net/dev
+darksky_key: 
+
+# Your location
+latitude: 
+longitude: 

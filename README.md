@@ -19,21 +19,24 @@ To make it easy for anyone to own all their data in an easy and secure way, with
 * Automated Backups (Coming Soon)
 * Easy Restore (Coming Soon)
 * Dynamic DNS Support (Coming Soon)
+* Automated Apple Health Import (Coming Soon)
 
 ## Included Software
 
-* [Home Assistant](https://www.home-assistant.io/) - Home Automation
-* [Emby](https://emby.media/) - Media Player
-* [Grafana](https://grafana.com/) - Pretty Graphs
-* [Chronograf](https://www.influxdata.com/time-series-platform/chronograf/) - More pretty graphs. Easy data exploration.
-* [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/) - Time Series Data Storage
-* [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/) - Server Statistics Reporting
-* Documentation - Offline, searchable documentation via [MkDocs](https://www.mkdocs.org/).
+* [Chronograf](https://www.influxdata.com/time-series-platform/chronograf/) - More pretty graphs. Easy data exploration
+* [Darksky](http://darksky.net/) - Local weather reported via [darksky-influxdb](https://github.com/ErwinSteffens/darksky-influxdb)
+* Documentation - Offline, searchable documentation via [MkDocs](https://www.mkdocs.org/)
+* [Emby](https://emby.media/) - Media player
+* [Gitea](https://gitea.io/en-US/) - Git hosting
+* [Grafana](https://grafana.com/) - Pretty graphs
+* [Home Assistant](https://www.home-assistant.io/) - Home Aatomation
+* [InfluxDB](https://www.influxdata.com/time-series-platform/influxdb/) - Time series data storage
+* [NextCloud](https://nextcloud.com/) - Private Cloud Storage, Calendar, Contacts, LDAP, etc.
+* [Pi-hole](https://pi-hole.net/) - Ad blocking
+* [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/) - Server statistics reporting
 
 ### Coming Soon
 
-* Gogs - Git Hosting
-* NextCloud - Private Cloud Storage, Calendar, Contacts, LDAP, etc.
 * uTorrent - Torrent Downloader
 * BulletNotes - Note taking knowledgebase with kanban and calendar functionality.
 

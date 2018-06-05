@@ -8,11 +8,15 @@
     - docs
     - docs/docs
     - emby
+    - gitea_db
     - grafana
     - homeassistant
     - influxdb
     - nextcloud
     - nextcloud_db
+    - pihole
+    - pihole/config
+    - pihole/dnsmasq.d
     - telegraf
     - traefik
 

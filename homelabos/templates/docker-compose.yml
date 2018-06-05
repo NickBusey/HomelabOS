@@ -1,5 +1,111 @@
 version: '3'
+
 services:
+
+  chronograf:
+    image: chronograf
+    restart: always
+    links:
+      - influxdb
+    ports:
+      - 8888:8888
+    environment:
+      - influxdb-url=http://influxdb:8086
+    labels:
+      - "traefik.enable=true"
+      - "traefik.admin.frontend.rule=Host:chronograf.{{ domain }}"
+      - "traefik.admin.protocol=http"
+      - "traefik.admin.port=8888"
+
+  darksky-influx:
+    image: erwinsteffens/darksky-influxdb:latest
+    restart: always
+    links:
+      - influxdb
+    environment:
+      - DARKSKY_KEY={{ darksky_key }}
+      - CRON=0 */2 * * * *
+      - INFLUXDB_HOST=influxdb
+      - INFLUXDB_DATABASE=darksky
+      - DARKSKY_LATITUDE={{ latitude }}
+      - DARKSKY_LONGITUDE={{ longitude }}
+
+  docs:
+    image: squidfunk/mkdocs-material
+    volumes:
+      - /var/homelabos/docs:/docs
+    ports:
+      - 8000:8000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.admin.frontend.rule=Host:docs.{{ domain }}"
+      - "traefik.admin.protocol=http"
+      - "traefik.admin.port=8000"
+
+  emby:
+    image: emby/embyserver:latest
+    restart: always
+    volumes:
+      - /var/homelabos/emby:/config
+    ports:
+      - 8096:8096
+    labels:
+      - "traefik.enable=true"
+      - "traefik.admin.frontend.rule=Host:emby.{{ domain }}"
+      - "traefik.admin.protocol=http"
+      - "traefik.admin.port=8096"
+
+
+  gitea:
+    image: gitea/gitea:latest
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    restart: always
+    links:
+      - gitea_db:db
+    volumes:
+      - ./gitea:/data
+    ports:
+      - "3030:3000"
+      - "222:22"
+    depends_on:
+      - gitea_db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.admin.frontend.rule=Host:git.{{ domain }}"
+      - "traefik.admin.protocol=http"
+      - "traefik.admin.port=3000"
+
+  gitea_db:
+    image: mariadb
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=gitea
+      - MYSQL_USER=gitea
+      - MYSQL_PASSWORD=gitea
+      - MYSQL_DATABASE=gitea
+    volumes:
+      - /var/homelabos/gitea_db:/var/lib/mysql
+
+
+  grafana:
+    image: grafana/grafana
+    restart: always
+    links:
+      - influxdb
+    ports:
+      - 3000:3000
+    volumes:
+      - /var/homelabos/grafana:/var/lib/grafana
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,natel-discrete-panel,petrslavotinek-carpetplot-panel,vonage-status-panel
+    labels:
+      - "traefik.enable=true"
+      - "traefik.admin.frontend.rule=Host:grafana.{{ domain }}"
+      - "traefik.admin.protocol=http"
+      - "traefik.admin.port=3000"
+
   homeassistant:
     image: homeassistant/home-assistant
     volumes:
@@ -20,19 +126,6 @@ services:
       - "traefik.admin.protocol=http"
       - "traefik.admin.port=8123"
 
-  emby:
-    image: emby/embyserver:latest
-    network_mode: host
-    restart: always
-    volumes:
-      - /var/homelabos/emby:/config
-    ports:
-      - 8096:8096
-    labels:
-      - "traefik.enable=true"
-      - "traefik.admin.frontend.rule=Host:emby.{{ domain }}"
-      - "traefik.admin.protocol=http"
-      - "traefik.admin.port=8096"
 
   influxdb:
     image: influxdb
@@ -42,35 +135,46 @@ services:
     ports:
       - 8086:8086
 
-  chronograf:
-    image: chronograf
-    restart: always
-    links:
-      - influxdb
-    ports:
-      - 8888:8888
-    labels:
-      - "traefik.enable=true"
-      - "traefik.admin.frontend.rule=Host:chronograf.{{ domain }}"
-      - "traefik.admin.protocol=http"
-      - "traefik.admin.port=8888"
 
-  grafana:
-    image: grafana/grafana
+
+  nextcloud:
+    image: nextcloud
     restart: always
-    links:
-      - influxdb
     ports:
-      - 3000:3000
+      - 8181:80
+    links:
+      - nextcloud_db
     volumes:
-      - /var/homelabos/grafana:/var/lib/grafana
-    environment:
-      - GF_INSTALL_PLUGINS=grafana-clock-panel,natel-discrete-panel,petrslavotinek-carpetplot-panel,vonage-status-panel
+      - /var/homelabos/nextcloud:/var/www/html
+    restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.admin.frontend.rule=Host:grafana.{{ domain }}"
+      - "traefik.admin.frontend.rule=Host:nextcloud.{{ domain }}"
       - "traefik.admin.protocol=http"
-      - "traefik.admin.port=3000"
+      - "traefik.admin.port=80"
+
+  nextcloud_db:
+    image: mariadb
+    restart: always
+    volumes:
+      - /var/homelabos/nextcloud_db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=nextcloud
+      - MYSQL_PASSWORD=nextcloud
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+
+  pihole:
+    image: diginc/pi-hole:latest
+    restart: always
+    volumes:
+      - /var/homelabos/pihole/config:/etc/pihole/
+      - /var/homelabos/pihole/dnsmasq.d:/etc/dnsmasq.d/"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.admin.frontend.rule=Host:pihole.{{ domain }}"
+      - "traefik.admin.protocol=http"
+      - "traefik.admin.port=80"
 
   telegraf:
     image: telegraf
@@ -103,14 +207,4 @@ services:
       - "traefik.frontend.rule=Host:whoami.docker.localhost"
       - "traefik.frontend.rule=PathPrefixStrip:/test"
 
-  docs:
-    image: squidfunk/mkdocs-material
-    volumes:
-      - /var/homelabos/docs:/docs
-    ports:
-      - 8000:8000
-    labels:
-      - "traefik.enable=true"
-      - "traefik.admin.frontend.rule=Host:docs.{{ domain }}"
-      - "traefik.admin.protocol=http"
-      - "traefik.admin.port=8000"
+
