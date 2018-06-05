@@ -1,6 +1,7 @@
-main_user_name: nick
+main_user_name: myuser
 
-ansible_ssh_user: nick
+ansible_ssh_user: myuser
 
 common_timezone: 'Etc/UTC'
 
+domain: my.domain.com

@@ -25,6 +25,9 @@
 - name: Configure Telegraf.
   copy: src=telegraf.conf dest=/var/homelabos/telegraf/telegraf.conf
 
+- name: Configure Traefik.
+  copy: src=traefik.toml dest=/var/homelabos/traefik/traefik.toml
+
 - name: Configure HomelabOS systemd service.
   template: src=homelabos.service dest=/etc/systemd/system/homelabos.service
 
