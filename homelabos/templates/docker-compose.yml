@@ -114,3 +114,35 @@ services:
       - "traefik.admin.frontend.rule=Host:docs.{{ domain }}"
       - "traefik.admin.protocol=http"
       - "traefik.admin.port=8000"
+
+  gitea:
+    image: gitea/gitea:latest
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    restart: always
+    links:
+      - gitea_db:db
+    volumes:
+      - ./gitea:/data
+     ports:
+       - "3030:3000"
+       - "222:22"
+    depends_on:
+      - gitea_db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.admin.frontend.rule=Host:git.{{ domain }}"
+      - "traefik.admin.protocol=http"
+      - "traefik.admin.port=3030"
+
+  gitea_db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=gitea
+      - MYSQL_USER=gitea
+      - MYSQL_PASSWORD=gitea
+      - MYSQL_DATABASE=gitea
+    volumes:
+      - /var/homelabos/gitea_db:/var/lib/mysql
