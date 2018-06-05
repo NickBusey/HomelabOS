@@ -7,6 +7,7 @@
     - docker
     - docs
     - docs/docs
+    - downloads
     - emby
     - gitea_db
     - grafana
@@ -19,6 +20,8 @@
     - pihole/dnsmasq.d
     - telegraf
     - traefik
+    - utorrent
+    - utorrent/settings
 
 - name: Configure Telegraf.
   template: src=telegraf.conf dest=/var/homelabos/telegraf/telegraf.conf

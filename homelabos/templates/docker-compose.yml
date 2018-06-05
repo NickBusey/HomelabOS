@@ -24,6 +24,7 @@ services:
       - influxdb
     environment:
       - DARKSKY_KEY={{ darksky_key }}
+      # This is every 2 minutes. This is about as fast as you can go with the free API keys without running out of queries.
       - CRON=0 */2 * * * *
       - INFLUXDB_HOST=influxdb
       - INFLUXDB_DATABASE=darksky
@@ -200,9 +201,26 @@ services:
       - /var/homelabos/traefik/traefik.toml:/etc/traefik/traefik.toml
       - /var/homelabos/traefik/acme.json:/etc/traefik/acme.json
 
-  whoami:
-    image: emilevauge/whoami # A container that exposes an API to show its IP address
+  utorrent:
+    image: ekho/utorrent:latest
+    volumes:
+      - /var/homelabos/downloads:/utorrent/data
+      - /var/homelabos/utorrent/settings:/utorrent/settings
+      # - /var/homelabos/utorrent/utserver.conf:/utorrent/utserver.conf
+    environment:
+      HOST_UID: 1002
+      HOST_GID: 1002
+    ports:
+      - 8082:8080
+      - 6881:6881
     restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
-      - "traefik.frontend.rule=Host:whoami.docker.localhost"
-      - "traefik.frontend.rule=PathPrefixStrip:/test"
+      - "traefik.enable=true"
+      - "traefik.admin.frontend.rule=Host:utorrent.{{ domain }}"
+      - "traefik.admin.protocol=http"
+      - "traefik.admin.port=8080"

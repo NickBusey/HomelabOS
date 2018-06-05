@@ -34,10 +34,10 @@ To make it easy for anyone to own all their data in an easy and secure way, with
 * [NextCloud](https://nextcloud.com/) - Private Cloud Storage, Calendar, Contacts, LDAP, etc.
 * [Pi-hole](https://pi-hole.net/) - Ad blocking
 * [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/) - Server statistics reporting
+* [uTorrent](https://www.utorrent.com/) - BitTorrent client (You wouldn't download a car..)
 
 ### Coming Soon
 
-* uTorrent - Torrent Downloader
 * BulletNotes - Note taking knowledgebase with kanban and calendar functionality.
 
 ## Requirements
